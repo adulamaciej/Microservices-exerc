@@ -1,5 +1,6 @@
 package org.example.productservice.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.productservice.service.ProductService;
 import org.springframework.http.HttpStatus;
@@ -32,7 +33,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO productDTO) {
+    public ResponseEntity<ProductDTO> createProduct(@RequestBody @Valid ProductDTO productDTO) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(productService.createProduct(productDTO));
     }
@@ -40,7 +41,7 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<ProductDTO> updateProduct(
             @PathVariable Long id,
-            @RequestBody ProductDTO productDTO) {
+            @RequestBody @Valid ProductDTO productDTO) {
         return ResponseEntity.ok(productService.updateProduct(id, productDTO));
     }
 

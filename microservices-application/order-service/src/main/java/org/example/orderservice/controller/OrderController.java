@@ -1,6 +1,7 @@
 package org.example.orderservice.controller;
 
 
+import jakarta.validation.Valid;
 import org.example.orderservice.dto.OrderDTO;
 import org.example.orderservice.service.OrderService;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderDTO orderDto) {
+    public ResponseEntity<OrderDTO> createOrder(@Valid @RequestBody OrderDTO orderDto) {
         return new ResponseEntity<>(orderService.createOrder(orderDto), HttpStatus.CREATED);
     }
 

@@ -3,11 +3,16 @@ package org.example.orderservice.client;
 
 import org.example.commondto.dto.ProductDTO;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-@FeignClient(name = "product-service", path = "/api/products")
+@FeignClient(
+        name = "product-service",
+        path = "/api/products",
+        fallback = ProductClientFallback.class)
+@Primary
 public interface ProductClient {
 
 
