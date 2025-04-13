@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  eureka-service:
+    build: ./eureka-service
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices-network
+
+  product-service:
+    build: ./product-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - eureka-service
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
+    networks:
+      - microservices-network
+
+  order-service:
+    build: ./order-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - eureka-service
+      - product-service
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
+    networks:
+      - microservices-network
+
+  gateway-service:
+    build: ./gateway-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eureka-service
+      - product-service
+      - order-service
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-service:8761/eureka/
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
