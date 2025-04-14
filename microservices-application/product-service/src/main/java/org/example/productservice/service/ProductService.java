@@ -54,7 +54,6 @@ public class ProductService {
         return productMapper.toDto(savedProduct);
     }
 
-    @Transactional
     public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
 
         Product product = productRepository.findById(id)
@@ -65,7 +64,6 @@ public class ProductService {
         return productMapper.toDto(updatedProduct);
     }
 
-    @Transactional
     public void deleteProduct(Long id) {
         if (!productRepository.existsById(id)) {
             throw new NoSuchElementException("Product not found with id: " + id);

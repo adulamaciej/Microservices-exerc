@@ -2,6 +2,7 @@ package org.example.orderservice.controller;
 
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.example.orderservice.dto.OrderDTO;
 import org.example.orderservice.service.OrderService;
 import org.springframework.http.HttpStatus;
@@ -12,12 +13,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/orders")
+@RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
 
-    public OrderController(OrderService orderService) {
-        this.orderService = orderService;
-    }
 
     @PostMapping
     public ResponseEntity<OrderDTO> createOrder(@Valid @RequestBody OrderDTO orderDto) {

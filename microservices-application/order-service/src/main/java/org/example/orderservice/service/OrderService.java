@@ -8,6 +8,7 @@ import org.example.orderservice.dto.OrderDTO;
 import org.example.orderservice.mapper.OrderMapper;
 import org.example.orderservice.model.Order;
 import org.example.orderservice.repository.OrderRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -24,7 +25,6 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
-
     private final ProductClient productClient;
 
 
@@ -35,34 +35,38 @@ public class OrderService {
         order.setOrderDate(LocalDateTime.now());
         order.setTotalAmount(calculateTotal(order));
 
-        Order savedOrder = orderRepository.save(order);
-
+        boolean allStocksUpdated = true;
         for (OrderDTO.OrderItemDTO item : orderDto.getItems()) {
-            try {
-                productClient.reduceStock(item.getProductId(), item.getQuantity());
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to update product stock: " + e.getMessage(), e);
+            ResponseEntity<ProductDTO> response = productClient.reduceStock(item.getProductId(), item.getQuantity());
+            if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+                allStocksUpdated = false;
+                break;
             }
         }
+        if (!allStocksUpdated) {
+            throw new RuntimeException("Failed to update stock for one or more products");
+        }
 
+        Order savedOrder = orderRepository.save(order);
         return orderMapper.toDto(savedOrder);
     }
 
     private void validateProductsAvailability(OrderDTO orderDto) {
         for (OrderDTO.OrderItemDTO item : orderDto.getItems()) {
-            ProductDTO product = productClient.getProductById(item.getProductId()).getBody();
+            ResponseEntity<ProductDTO> response = productClient.getProductById(item.getProductId());
+            ProductDTO product = response.getBody();
 
-            if (product == null) {
+            if (product == null || "Unavailable product".equals(product.getName())) {
                 throw new RuntimeException("Product not found: " + item.getProductId());
             }
 
             if (product.getStockQuantity() < item.getQuantity()) {
                 throw new RuntimeException("Insufficient stock for product: " + item.getProductId());
             }
-
             item.setUnitPrice(product.getPrice());
         }
     }
+
 
     private BigDecimal calculateTotal(Order order) {
         return order.getItems().stream()
