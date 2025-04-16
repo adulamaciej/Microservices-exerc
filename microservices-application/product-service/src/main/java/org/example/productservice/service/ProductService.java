@@ -71,11 +71,13 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public List<ProductDTO> searchProductsByName(String name) {
         List<Product> products = productRepository.findByNameContaining(name);
         return productMapper.toDtoList(products);
     }
 
+    @Transactional(readOnly = true)
     public List<ProductDTO> findAvailableProducts(Integer minimumQuantity) {
         List<Product> products = productRepository.findByStockQuantityGreaterThan(minimumQuantity);
         return productMapper.toDtoList(products);

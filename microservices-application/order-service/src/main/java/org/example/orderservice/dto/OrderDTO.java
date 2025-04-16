@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -23,6 +24,10 @@ public class OrderDTO {
 
     @Positive(message = "Total amount must be positive")
     private BigDecimal totalAmount;
+
+    private LocalDateTime orderDate;
+
+
 
     @Data
     public static class OrderItemDTO {
