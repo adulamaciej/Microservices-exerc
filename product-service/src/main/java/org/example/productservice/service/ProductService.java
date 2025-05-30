@@ -3,6 +3,7 @@ package org.example.productservice.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.commondto.dto.ProductDTO;
+import org.example.productservice.exception.InsufficientStockException;
 import org.example.productservice.mapper.ProductMapper;
 import org.example.productservice.model.Product;
 import org.example.productservice.repository.ProductRepository;
@@ -17,6 +18,7 @@ import java.util.NoSuchElementException;
 @Transactional
 public class ProductService {
 
+
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
 
@@ -24,9 +26,8 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Product not found with id: " + id));
 
-
         if (product.getStockQuantity() < quantity) {
-            throw new IllegalArgumentException("Insufficient stock for product: " + id);
+            throw new InsufficientStockException("Insufficient stock for product: " + id);
         }
 
         product.setStockQuantity(product.getStockQuantity() - quantity);
@@ -42,7 +43,6 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public ProductDTO getProductById(Long id) {
-
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Product not found with id: " + id));
         return productMapper.toDto(product);
@@ -55,7 +55,6 @@ public class ProductService {
     }
 
     public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
-
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Product not found with id: " + id));
 
@@ -78,8 +77,8 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductDTO> findAvailableProducts(Integer minimumQuantity) {
-        List<Product> products = productRepository.findByStockQuantityGreaterThan(minimumQuantity);
+    public List<ProductDTO> findAvailableProducts() {
+        List<Product> products = productRepository.findByStockQuantityGreaterThan(0);
         return productMapper.toDtoList(products);
     }
 }

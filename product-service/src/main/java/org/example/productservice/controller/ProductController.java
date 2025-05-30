@@ -17,10 +17,6 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @PutMapping("/{id}/reduce-stock")
-    public ResponseEntity<ProductDTO> reduceStock(@PathVariable Long id, @RequestParam Integer quantity) {
-        return ResponseEntity.ok(productService.reduceStock(id, quantity));
-    }
 
     @GetMapping
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
@@ -30,6 +26,16 @@ public class ProductController {
     @GetMapping("/{id}")
     public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductDTO>> searchProducts(@RequestParam String name) {
+        return ResponseEntity.ok(productService.searchProductsByName(name));
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<List<ProductDTO>> getAvailableProducts() {
+        return ResponseEntity.ok(productService.findAvailableProducts());
     }
 
     @PostMapping
@@ -45,20 +51,15 @@ public class ProductController {
         return ResponseEntity.ok(productService.updateProduct(id, productDTO));
     }
 
+    @PutMapping("/{id}/reduce-stock")
+    public ResponseEntity<ProductDTO> reduceStock(@PathVariable Long id, @RequestParam Integer quantity) {
+        return ResponseEntity.ok(productService.reduceStock(id, quantity));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<ProductDTO>> searchProducts(@RequestParam String name) {
-        return ResponseEntity.ok(productService.searchProductsByName(name));
-    }
-
-    @GetMapping("/available")
-    public ResponseEntity<List<ProductDTO>> getAvailableProducts(
-            @RequestParam(defaultValue = "0") Integer minQuantity) {
-        return ResponseEntity.ok(productService.findAvailableProducts(minQuantity));
-    }
 }

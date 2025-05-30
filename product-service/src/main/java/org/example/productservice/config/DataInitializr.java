@@ -6,9 +6,9 @@ import org.example.productservice.repository.ProductRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.util.List;
+
 
 @Configuration
 @RequiredArgsConstructor
@@ -22,7 +22,7 @@ public class DataInitializr {
         return args -> {
                 Product product1 = Product.builder()
                         .name("Laptop Dell XPS 13")
-                        .description("Ultrabook, display 13.3 cal, Intel Core i7, 16GB RAM, 512GB SSD")
+                        .description("Ultrabook, display 13.3 inch, Intel Core i7, 16GB RAM, 512GB SSD")
                         .price(new BigDecimal("4999.99"))
                         .stockQuantity(10)
                         .build();
@@ -41,7 +41,7 @@ public class DataInitializr {
                         .stockQuantity(8)
                         .build();
 
-                productRepository.saveAll(Arrays.asList(product1,product2,product3));
+                productRepository.saveAll(List.of(product1,product2,product3));
         };
     }
 
