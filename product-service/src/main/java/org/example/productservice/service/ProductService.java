@@ -49,6 +49,9 @@ public class ProductService {
     }
 
     public ProductDTO createProduct(ProductDTO productDTO) {
+        if (productRepository.existsByName(productDTO.getName())) {
+            throw new IllegalArgumentException("Product with name '" + productDTO.getName() + "' already exists");
+        }
         Product product = productMapper.toEntity(productDTO);
         Product savedProduct = productRepository.save(product);
         return productMapper.toDto(savedProduct);
@@ -58,15 +61,24 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Product not found with id: " + id));
 
+        if (!product.getName().equals(productDTO.getName()) &&
+                productRepository.existsByName(productDTO.getName())) {
+            throw new IllegalArgumentException("Product with name '" + productDTO.getName() + "' already exists");
+        }
+
         productMapper.updateProductFromDto(productDTO, product);
         Product updatedProduct = productRepository.save(product);
         return productMapper.toDto(updatedProduct);
     }
 
     public void deleteProduct(Long id) {
-        if (!productRepository.existsById(id)) {
-            throw new NoSuchElementException("Product not found with id: " + id);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Product not found with id: " + id));
+
+        if (product.getStockQuantity() > 0) {
+            throw new IllegalStateException("Cannot delete product - has remaining stock: " + product.getStockQuantity());
         }
+
         productRepository.deleteById(id);
     }
 

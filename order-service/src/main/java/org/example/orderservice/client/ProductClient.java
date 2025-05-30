@@ -7,8 +7,9 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 @Primary
-@FeignClient(name = "product-service", path = "/api/products", fallback = ProductClientFallback.class)
+@FeignClient(name = "product-service", path = "/api/products")
 public interface ProductClient {
 
 

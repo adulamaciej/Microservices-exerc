@@ -18,6 +18,7 @@ public interface OrderMapper {
     OrderDTO toDto(Order order);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "order", ignore = true)
     OrderItem toOrderItem(OrderDTO.OrderItemDTO orderItemDTO);
 
     OrderDTO.OrderItemDTO toOrderItemDto(OrderItem orderItem);
