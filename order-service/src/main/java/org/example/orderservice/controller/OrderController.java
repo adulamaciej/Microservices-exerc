@@ -1,6 +1,7 @@
 package org.example.orderservice.controller;
 
 
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.orderservice.dto.OrderDTO;
@@ -29,6 +30,7 @@ public class OrderController {
     }
 
     @PostMapping
+    @RateLimiter(name = "orderApi")
     public ResponseEntity<OrderDTO> createOrder(@Valid @RequestBody OrderDTO orderDto) {
         return new ResponseEntity<>(orderService.createOrder(orderDto), HttpStatus.CREATED);
     }

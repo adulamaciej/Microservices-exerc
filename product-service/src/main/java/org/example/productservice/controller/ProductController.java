@@ -1,5 +1,6 @@
 package org.example.productservice.controller;
 
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.productservice.service.ProductService;
@@ -39,12 +40,14 @@ public class ProductController {
     }
 
     @PostMapping
+    @RateLimiter(name = "productApi")
     public ResponseEntity<ProductDTO> createProduct(@RequestBody @Valid ProductDTO productDTO) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(productService.createProduct(productDTO));
     }
 
     @PutMapping("/{id}")
+    @RateLimiter(name = "productApi")
     public ResponseEntity<ProductDTO> updateProduct(
             @PathVariable Long id,
             @RequestBody @Valid ProductDTO productDTO) {
@@ -52,6 +55,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}/reduce-stock")
+    @RateLimiter(name = "productApi")
     public ResponseEntity<ProductDTO> reduceStock(@PathVariable Long id, @RequestParam Integer quantity) {
         return ResponseEntity.ok(productService.reduceStock(id, quantity));
     }
